@@ -1,0 +1,142 @@
+diff --git a/src/main/java/dev/bhash/backend/ManagedEmitter.java b/src/main/java/dev/bhash/backend/ManagedEmitter.java
+index a9d767e..e3de446 100644
+--- a/src/main/java/dev/bhash/backend/ManagedEmitter.java
++++ b/src/main/java/dev/bhash/backend/ManagedEmitter.java
+@@ -124,10 +124,17 @@ public final class ManagedEmitter extends BhashBaseVisitor<ManagedEmitter.Expr>
+     private String program(ProgramContext program) {
+         collectClasses(program);
+         functions.put(Identifiers.key("पढ़ो"), new ArrayList<>(List.of(new Function("BhashRuntime.readInteger", Type.INT, List.of(), null, Access.PUBLIC, false, null, true))));
++        functions.put(Identifiers.key("पाठपढ़ो"), new ArrayList<>(List.of(new Function("BhashRuntime.readText", Type.TEXT, List.of(), null, Access.PUBLIC, false, null, true))));
++        functions.put(Identifiers.key("लंबाई"), new ArrayList<>(List.of(new Function("BhashRuntime.length", Type.INT, List.of(Type.TEXT), null, Access.PUBLIC, false, null, true))));
++        functions.put(Identifiers.key("अंश"), new ArrayList<>(List.of(new Function("BhashRuntime.slice", Type.TEXT, List.of(Type.TEXT,Type.INT,Type.INT), null, Access.PUBLIC, false, null, true))));
++        functions.put(Identifiers.key("अंकपाठ"), new ArrayList<>(List.of(new Function("BhashRuntime.integerText", Type.TEXT, List.of(Type.INT), null, Access.PUBLIC, false, null, true))));
++        functions.put(Identifiers.key("पूर्णांकपाठ"), new ArrayList<>(List.of(new Function("BhashRuntime.parseInteger", Type.INT, List.of(Type.TEXT), null, Access.PUBLIC, false, null, true))));
++        functions.put(Identifiers.key("बड़ाअक्षर"), new ArrayList<>(List.of(new Function("BhashRuntime.upper", Type.TEXT, List.of(Type.TEXT), null, Access.PUBLIC, false, null, true))));
++        functions.put(Identifiers.key("त्रुटि"), new ArrayList<>(List.of(new Function("BhashRuntime.fail", Type.VOID, List.of(Type.TEXT), null, Access.PUBLIC, false, null, true))));
+         int globalId=0;
+         for (var declaration : program.functionDecl()) {
+             String name = Identifiers.key(declaration.IDENTIFIER().getText());
+-            if (name.equals(Identifiers.key("पढ़ो"))) throw error(declaration,"Duplicate or reserved function: पढ़ो");
++            if (functions.containsKey(name) && functions.get(name).get(0).declaration == null) throw error(declaration,"Duplicate or reserved function: पढ़ो");
+             if (declaration.block()==null) throw error(declaration,"A function requires a body.");
+             var function = new Function("f" + globalId++, type(declaration.returnType()), parameters(declaration.parameters()),
+                     null, Access.PUBLIC, false, declaration, true);
+@@ -722,6 +729,7 @@ public final class ManagedEmitter extends BhashBaseVisitor<ManagedEmitter.Expr>
+                 case "==", "!=" -> { type = Type.BOOL; }
+                 case "<", "<=", ">", ">=" -> { numeric(ctx, type); type = Type.BOOL; }
+                 case "%" -> require(ctx, Type.INT, type);
++                case "+" -> { if (type != Type.TEXT) numeric(ctx, type); }
+                 default -> numeric(ctx, type);
+             }
+             if ((operator.equals("==") || operator.equals("!=")) && result.type == Type.TEXT) {
+diff --git a/src/main/resources/dev/bhash/backend/clr/BhashRuntime.cs.txt b/src/main/resources/dev/bhash/backend/clr/BhashRuntime.cs.txt
+index c6ebe6e..662241a 100644
+--- a/src/main/resources/dev/bhash/backend/clr/BhashRuntime.cs.txt
++++ b/src/main/resources/dev/bhash/backend/clr/BhashRuntime.cs.txt
+@@ -53,6 +53,36 @@ internal static class BhashRuntime {
+         || c == '\u1680' || (c >= '\u2000' && c <= '\u2006') || (c >= '\u2008' && c <= '\u200a')
+         || c == '\u2028' || c == '\u2029' || c == '\u205f' || c == '\u3000';
+ 
++    internal static string readText() {
++        try { return Input.ReadLine() ?? throw new Failure("इनपुट समाप्त: पाठ अपेक्षित था।"); }
++        catch (Exception e) when (e is IOException || e is DecoderFallbackException) { throw new Failure("UTF-8 पाठ पढ़ा नहीं जा सका।"); }
++    }
++    internal static long length(string value) {
++        long count = 0; foreach (var rune in value.EnumerateRunes()) count++; return count;
++    }
++    internal static string slice(string value, long start, long end) {
++        if (start < 0 || end < start || end > length(value)) throw new Failure("पाठ अंश सीमा से बाहर है।");
++        var result = new StringBuilder(); long i = 0;
++        foreach (var rune in value.EnumerateRunes()) { if (i >= start && i < end) result.Append(rune.ToString()); i++; }
++        return result.ToString();
++    }
++    internal static string integerText(long value) => value.ToString(CultureInfo.InvariantCulture);
++    internal static long parseInteger(string value) {
++        if (!Regex.IsMatch(value, @"\A[+-]?(?:[0-9]+|[०-९]+)\z", RegexOptions.CultureInvariant)) throw new Failure("अमान्य पूर्णांक पाठ।");
++        var ascii = new StringBuilder();
++        foreach (char c in value) ascii.Append(c >= '०' && c <= '९' ? (char)('0' + c - '०') : c);
++        if (!long.TryParse(ascii.ToString(), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out long number)) throw new Failure("पूर्णांक 64-बिट सीमा से बाहर है।");
++        return number;
++    }
++    internal static string upper(string value) {
++        var result = new StringBuilder();
++        foreach (var rune in value.EnumerateRunes()) {
++            int cp = rune.Value; result.Append(char.ConvertFromUtf32(cp >= 'a' && cp <= 'z' ? cp - 32 : cp));
++        }
++        return result.ToString();
++    }
++    internal static void fail(string message) { throw new Failure(message); }
++
+     internal static void print(params object[] values) {
+         for (int i = 0; i < values.Length; i++) {
+             if (i > 0) Output.Write(' ');
+diff --git a/src/main/resources/dev/bhash/backend/jvm/BhashRuntime.java.txt b/src/main/resources/dev/bhash/backend/jvm/BhashRuntime.java.txt
+index 1c201d6..69092fa 100644
+--- a/src/main/resources/dev/bhash/backend/jvm/BhashRuntime.java.txt
++++ b/src/main/resources/dev/bhash/backend/jvm/BhashRuntime.java.txt
+@@ -28,6 +28,32 @@ final class BhashRuntime {
+         catch (NumberFormatException error) { throw new Failure("पूर्णांक 64-बिट सीमा से बाहर है।"); }
+     }
+ 
++    static String readText() {
++        try {
++            String value = INPUT.readLine();
++            if (value == null) throw new Failure("इनपुट समाप्त: पाठ अपेक्षित था।");
++            return value;
++        } catch (IOException e) { throw new Failure("UTF-8 पाठ पढ़ा नहीं जा सका।"); }
++    }
++    static long length(String value) { return value.codePointCount(0, value.length()); }
++    static String slice(String value, long start, long end) {
++        long count = length(value);
++        if (start < 0 || end < start || end > count) throw new Failure("पाठ अंश सीमा से बाहर है।");
++        return value.substring(value.offsetByCodePoints(0, (int)start), value.offsetByCodePoints(0, (int)end));
++    }
++    static String integerText(long value) { return Long.toString(value); }
++    static long parseInteger(String value) {
++        if (!value.matches("[+-]?(?:[0-9]+|[०-९]+)")) throw new Failure("अमान्य पूर्णांक पाठ।");
++        try { return Long.parseLong(value); }
++        catch (NumberFormatException e) { throw new Failure("पूर्णांक 64-बिट सीमा से बाहर है।"); }
++    }
++    static String upper(String value) {
++        var result = new StringBuilder();
++        value.codePoints().forEach(cp -> result.appendCodePoint(cp >= 'a' && cp <= 'z' ? cp - 32 : cp));
++        return result.toString();
++    }
++    static void fail(String message) { throw new Failure(message); }
++
+     static void print(Object... values) {
+         for (int i = 0; i < values.length; i++) {
+             if (i > 0) OUTPUT.print(' ');
+diff --git a/src/test/java/dev/bhash/ManagedCompilerTest.java b/src/test/java/dev/bhash/ManagedCompilerTest.java
+index 84f917d..5447199 100644
+--- a/src/test/java/dev/bhash/ManagedCompilerTest.java
++++ b/src/test/java/dev/bhash/ManagedCompilerTest.java
+@@ -16,6 +16,28 @@ import org.junit.jupiter.api.io.TempDir;
+ import static org.junit.jupiter.api.Assertions.*;
+ 
+ abstract class ManagedCompilerTest {
++    @Test void unicodeScalarTextOperationsAndAsciiNumericSerialization() throws Exception {
++        var result = run(body("""
++                स्थिर पाठ्य: पाठ = पाठपढ़ो();
++                लिखो(पाठ्य + "!");
++                लिखो(लंबाई(पाठ्य), अंश(पाठ्य, १, २));
++                लिखो(अंकपाठ(-४२), पूर्णांकपाठ("५२"), बड़ाअक्षर("e2"), बड़ाअक्षर("aßé"));
++                """), "a😀क\n");
++        assertEquals(0, result.exit);
++        assertEquals("a😀क!\n३ 😀\n-42 ५२ E2 Aßé\n", result.output);
++    }
++
++    @Test void textOperationsRejectInvalidRangesNumbersEofAndReservedNames() throws Exception {
++        for (String statement : List.of("लिखो(अंश(\"😀\", ०, २));", "लिखो(पूर्णांकपाठ(\"1२\"));",
++                "लिखो(पूर्णांकपाठ(\"9223372036854775808\"));", "लिखो(पाठपढ़ो());", "त्रुटि(\"test\");")) {
++            var result = run(body(statement), "");
++            assertEquals(1, result.exit);
++            assertTrue(result.output.startsWith("भाष:"), result.output);
++            assertFalse(result.output.contains("Exception"), result.output);
++        }
++        assertThrows(CompilationException.class, () -> compile("कार्य लंबाई() -> पूर्णांक { लौटाओ १; } कार्य मुख्य() -> शून्य {}"));
++        assertThrows(CompilationException.class, () -> body("लिखो(\"a\" + १);"));
++    }
+     protected final Target target;
+     protected ManagedCompilerTest(Target target) { this.target = target; }
+     protected boolean clr() { return target == Target.CLR; }
