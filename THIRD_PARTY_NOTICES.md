@@ -17,3 +17,8 @@ The companion shaded compiler JAR includes ANTLR 4.13.2, copyright (c) 2012–20
 The ANTLR Project, under its BSD 3-Clause license. Its packaged license is
 included in the JAR. See the compiler checkout's `THIRD_PARTY_NOTICES.md` for
 the complete notice.
+
+The browser application additionally redistributes the .NET WebAssembly runtime.
+Its license and third-party notices are retained in `web/runtime-notices/` and
+copied into the browser build. Playwright is a development/test dependency only;
+it is not shipped to visitors.

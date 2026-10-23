@@ -15,3 +15,4 @@ coverage/
 .bhash-build/
 bhash/*.jar
 bhash/*-clr/
+web/dist/
