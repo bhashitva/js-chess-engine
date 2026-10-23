@@ -1,7 +1,7 @@
 {
-  "name": "js-chess-engine",
-  "version": "2.4.6",
-  "description": "Simple and fast Node.js chess engine with configurable AI and no dependencies",
+  "name": "bhash-chess-engine",
+  "version": "0.1.0",
+  "description": "Native Bhash (भाष) chess engine with JVM/.NET applications and a JavaScript API adapter",
   "keywords": [
     "chess",
     "chess-engine",
@@ -23,36 +23,38 @@
     "commonjs",
     "react",
     "no-dependencies",
-    "board-game"
+    "board-game",
+    "bhash",
+    "devanagari",
+    "jvm",
+    "dotnet"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "bhash/index.cjs",
+  "types": "bhash/index.d.ts",
   "files": [
-    "dist"
+    "bhash",
+    "LICENSE",
+    "README.md",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
-    "benchmark": "npm run build && node scripts/benchmark-levels.mjs",
-    "clean": "rm -rf dist",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "prebuild": "npm run clean",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:tt-cache": "npm run build && node scripts/test-tt-cache.mjs",
-    "typecheck": "tsc --noEmit",
-    "play": "node example/play.mjs",
-    "preversion": "npm run lint && npm test && npm run build",
-    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
+    "build": "node bhash/build.mjs",
+    "build:clr": "node bhash/build.mjs --clr",
+    "test": "node --test test/bhash/*.test.cjs",
+    "demo": "node example/bhash-demo.mjs",
+    "build:reference": "tsc",
+    "test:reference": "jest",
+    "typecheck:reference": "tsc --noEmit",
+    "lint:reference": "eslint .",
+    "test:compat": "jest --config jest.bhash.config.cjs --runInBand",
+    "test:compat:harness": "node test/bhash/upstream-compat.cjs"
   },
   "author": "bc.josefjadrny@gmail.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/josefjadrny/js-chess-engine.git"
+    "url": "git+https://github.com/bhashitva/js-chess-engine.git"
   },
-  "homepage": "https://github.com/josefjadrny/js-chess-engine#readme",
+  "homepage": "https://github.com/bhashitva/js-chess-engine",
   "license": "MIT",
   "engines": {
     "node": ">=24"
@@ -70,5 +72,12 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.54.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./bhash/index.d.ts",
+      "import": "./bhash/index.mjs",
+      "require": "./bhash/index.cjs"
+    }
   }
 }

@@ -1,22 +1,79 @@
-name: CI
-
-on: [push]
-
+name: Bhash chess
+on:
+  push:
+    branches: [bhash, 'feature/bhash-*']
+  pull_request:
+    branches: [bhash]
+  workflow_dispatch:
+permissions:
+  contents: read
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
+  build-and-test:
+    timeout-minutes: 25
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [24.x]
-
+        os: [ubuntu-latest, windows-latest]
+        backend: [jvm, clr]
+    runs-on: ${{ matrix.os }}
+    env:
+      BHASH_COMPILER: ${{ github.workspace }}/compiler/target/bhash-compiler-0.1.0-SNAPSHOT.jar
+      BHASH_TARGET: ${{ matrix.backend }}
+      REFERENCE_ENGINE: ${{ github.workspace }}/chess/dist/index.js
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+    defaults:
+      run:
+        working-directory: chess
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${ { matrix.node-version } }
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: npm
-    - run: npm ci
-    - run: npm run lint
-    - run: npm test
+      - uses: actions/checkout@v5
+        with:
+          path: chess
+      - name: Check out the compiler with portable text operations
+        uses: actions/checkout@v5
+        with:
+          repository: bhashitva/bhash
+          ref: 0591eb7f34ab61e69dd8032c37c59fcfa641e770
+          path: compiler
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: chess/package-lock.json
+      - name: Build the pinned Bhash compiler
+        run: mvn --batch-mode --no-transfer-progress -f ../compiler/pom.xml -DskipTests package
+      - run: npm ci
+      - name: Build the TypeScript reference for differential tests
+        run: npm run build:reference
+      - name: Compile native Bhash applications
+        shell: bash
+        run: |
+          if [ "$BHASH_TARGET" = clr ]; then
+            npm run build:clr
+          else
+            npm run build
+          fi
+      - name: Run chess correctness and differential tests
+        run: npm test
+      - name: Run unchanged upstream API and FEN suites against Bhash
+        run: npm run test:compat
+      - name: Upload runnable native applications and Bhash source
+        uses: actions/upload-artifact@v4
+        with:
+          name: bhash-chess-${{ matrix.os }}-${{ matrix.backend }}
+          path: |
+            chess/bhash/*.bhash
+            chess/bhash/*.jar
+            chess/bhash/*-clr/
+            chess/run-demo.ps1
+            chess/README.md
+            chess/LICENSE
+            chess/THIRD_PARTY_NOTICES.md
+          include-hidden-files: true
+          if-no-files-found: error

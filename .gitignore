@@ -10,3 +10,8 @@ coverage/
 # OS files
 .DS_Store
 *.log
+
+# Rebuildable Bhash application artifacts (included in the local delivery bundle).
+.bhash-build/
+bhash/*.jar
+bhash/*-clr/
