@@ -1,0 +1,55 @@
+name: Bhash browser chess
+on:
+  push:
+    branches: [bhash, 'feature/browser-*']
+  pull_request:
+    branches: [bhash]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      BHASH_COMPILER: ${{ github.workspace }}/compiler/target/bhash-compiler-0.1.0-SNAPSHOT.jar
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+    defaults:
+      run:
+        working-directory: chess
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          path: chess
+      - uses: actions/checkout@v5
+        with:
+          repository: bhashitva/bhash
+          ref: 365e2113462fc33807557aa4efd480893203622e
+          path: compiler
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: chess/package-lock.json
+      - run: dotnet workload install wasm-tools
+      - run: mvn --batch-mode --no-transfer-progress -f ../compiler/pom.xml -DskipTests package
+      - run: npm ci
+      - run: npm run web:build
+      - run: npm run test:web
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:web:browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bhash-chess-browser
+          path: |
+            chess/web/dist/
+            chess/.bhash-build/web-*.png
+          if-no-files-found: error

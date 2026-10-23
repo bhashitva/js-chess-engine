@@ -1,0 +1,22 @@
+// Browser boundary. All rules, legal moves and search remain in shatranj.bhash.
+// Input: FEN, action, then action arguments on separate lines.
+कार्य मुख्य() -> शून्य {
+    स्थिर खेलक: खेल = नया खेल(पाठपढ़ो());
+    स्थिर आदेश: पाठ = पाठपढ़ो();
+    मान विश्लेषण: पाठ = "null";
+    यदि (आदेश == "move") {
+        स्थिर से: पाठ = पाठपढ़ो();
+        स्थिर तक: पाठ = पाठपढ़ो();
+        स्थिर पदोन्नति: पाठ = पाठपढ़ो();
+        खेलक.चली(से, तक, पदोन्नति);
+    } अन्यथा यदि (आदेश == "ai") {
+        स्थिर स्तर: पूर्णांक = पूर्णांकपाठ(पाठपढ़ो());
+        // Browser interpreter searches use shallower iterations without extra
+        // quiescence/check extensions; the same native search chooses the move.
+        विश्लेषण = खेलक.बुद्धि(स्तर, सत्य, सत्य, स्तर, ०, ०, असत्य, २०४८);
+    } अन्यथा यदि (आदेश != "snapshot") { त्रुटि("Unknown browser action"); }
+    लिखो("{\"board\":" + खेलक.जेसननिर्यात()
+        + ",\"moves\":" + खेलक.चालें()
+        + ",\"fen\":\"" + खेलक.फेननिर्यात()
+        + "\",\"ai\":" + विश्लेषण + "}");
+}

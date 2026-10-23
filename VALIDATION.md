@@ -15,7 +15,9 @@ Validated locally on Windows using Java 24 (applications target Java 17),
 | TypeScript declarations | Consumer example type-checked |
 | Compiler regression suites | JVM 36, CLR 38, frontend 17, generics 3, WASM validation 3; zero failures |
 | Final text-operation checks | Both new shared regression cases rerun on JVM and CLR after final ASCII-case refinement |
-| Browser/WASM application | Not built or validated |
+| Browser/WASM application | Compiled successfully; manual browser checks confirmed legal moves, AI reply, FEN loading, knight promotion, undo and deep-search cancellation |
+| Responsive browser layout | Checked at 390 px wide; no horizontal overflow |
+| Web transport/static server | Six tests cover request validation, worker reuse/recovery/cancellation, board presentation and WASM MIME handling |
 
 The 45-case compatibility run executed the unchanged `api.test.ts` and
 `fen.test.ts` bodies with a small local synchronous matcher harness. This was
@@ -28,6 +30,11 @@ The differential check uses the original TypeScript implementation only as an
 independent test oracle. It is not loaded by the port at runtime.
 The full original AI tactical/strength/benchmark suite has not been claimed as
 passing: the Bhash search implementation and playing strength are different.
+
+The browser feature was exercised manually in the app's browser preview using
+the real WebAssembly engine. An isolated Playwright end-to-end suite and a Linux
+WebAssembly CI workflow are included; that automated browser suite has not been
+run locally in this session.
 
 ## Standard move-generation counts
 

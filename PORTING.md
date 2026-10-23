@@ -56,7 +56,8 @@ Both the library and entry points remain actual type-checked Bhash source.
   native generation still includes all four distinct promotions.
 - History from a custom FEN is recorded from that actual position, correcting the
   original history replay behavior.
-- The Node adapter requires a managed runtime. Browser support is not claimed.
+- The Node adapter requires a managed runtime. The separate `web/` application
+  runs a compiled Bhash WebAssembly build in a browser worker with no chess server.
 
 ## Protocol
 

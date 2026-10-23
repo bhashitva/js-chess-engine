@@ -4,9 +4,25 @@ A native **Bhash (भाष)** port of [js-chess-engine](https://github.com/bhas
 
 Chess rules, move generation, FEN parsing/serialization, game status, history,
 evaluation and AI search live in [`bhash/shatranj.bhash`](bhash/shatranj.bhash).
-The application compiles to a standalone **JVM JAR** or **.NET 10 assembly**.
+The application compiles to a standalone **JVM JAR**, **.NET 10 assembly**, or
+**browser WebAssembly application**.
 The JavaScript adapter delegates chess operations to that compiled application;
 it does not import or run the original TypeScript engine.
+
+## Play in a browser
+
+The new browser app runs the compiled Bhash engine locally in a worker, with
+click-to-move play, AI, promotion choices, undo, board rotation, saved games,
+move history and FEN import/export. Visitors need only a modern browser.
+
+```sh
+npm run web:build    # requires BHASH_COMPILER, JDK 17+, .NET 10 + wasm-tools
+npm run web:serve
+```
+
+Open **http://localhost:4173**. A delivered prebuilt `web/dist/` does not need
+recompilation. The entire output is deployable to a static HTTPS host, including
+GitHub Pages. See [web/README.md](web/README.md) for setup, hosting and tests.
 
 ## Play the native showcase
 
@@ -175,9 +191,9 @@ is approximate and capped at 262,144 entries. Caches last for one AI request.
 
 The Node adapter is synchronous and launches a managed process for each request.
 It requires Node and a JVM or .NET runtime and cannot execute directly in a browser.
-The standalone native applications do not require Node. Bhash's browser-WASM
-backend can reuse the library, but no browser adapter or WASM build has been
-validated in this delivery. Automatic repetition/insufficient-material draw
+The standalone native applications do not require Node. The separate browser
+application uses the Bhash WebAssembly backend and needs no installed managed
+runtime. Automatic repetition/insufficient-material draw
 adjudication is not added; public game completion follows the upstream
 checkmate/stalemate behavior. Error messages may differ from upstream.
 
