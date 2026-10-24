@@ -1,8 +1,6 @@
-// Execute the unchanged upstream API/FEN Jest specifications with a small matcher
-// shim, avoiding a dependency installation in the deliverable. Not shipped.
-const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const ts=require(process.env.BHASH_TYPESCRIPT || 'typescript');
-const api=require('../../bhash/index.cjs');
+// Execute upstream API/FEN assertions (types erased) against the Bhash adapter.
+// No TypeScript compiler or Jest runtime is required.
+const assert=require('node:assert/strict');
 let failed=0,total=0;
 global.describe=(_,fn)=>fn();
 global.it=(name,fn)=>{total++;try{fn();}catch(e){failed++;console.log('FAIL',name,e.message);}};
@@ -21,9 +19,5 @@ function expect(actual,negate=false) {
  Object.defineProperty(match,'not',{get:()=>expect(actual,!negate)});return match;
 }
 global.expect=expect;
-for(const filename of ['api.test.ts','fen.test.ts']) {
- const source=fs.readFileSync(path.join(__dirname, '../integration', filename),'utf8');
- const js=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
- const exports={};new Function('require','exports',js)(name=>name==='../../src'?api:require(name),exports);
-}
+for(const filename of ['api.test.cjs','fen.test.cjs']) require('../compat/'+filename);
 console.log(JSON.stringify({total,passed:total-failed,failed}));process.exitCode=failed?1:0;

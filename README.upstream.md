@@ -1,3 +1,6 @@
+> Historical upstream documentation: TypeScript paths and commands below
+> refer to the `master` branch. For this branch see [the Bhash source map](docs/SOURCE_MAP.md).
+
 # JS-CHESS-ENGINE
 
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/josefjadrny/js-chess-engine)

@@ -9,7 +9,7 @@
  * TT Cache Values tested: 0, 1, 2, 4, 8, 16, 32, 64 MB
  */
 
-import { Game } from '../dist/index.js';
+import { Game } from '../bhash/index.cjs';
 
 // Test multiple positions from the tactical test suite
 const TEST_POSITIONS = [

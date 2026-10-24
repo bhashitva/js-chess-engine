@@ -19,7 +19,7 @@ jobs:
     env:
       BHASH_COMPILER: ${{ github.workspace }}/compiler/target/bhash-compiler-0.1.0-SNAPSHOT.jar
       BHASH_TARGET: ${{ matrix.backend }}
-      REFERENCE_ENGINE: ${{ github.workspace }}/chess/dist/index.js
+      REFERENCE_ENGINE: ${{ github.workspace }}/reference/dist/index.js
       DOTNET_CLI_TELEMETRY_OPTOUT: '1'
     defaults:
       run:
@@ -28,6 +28,12 @@ jobs:
       - uses: actions/checkout@v5
         with:
           path: chess
+      - name: Check out the original engine only as an independent test oracle
+        uses: actions/checkout@v5
+        with:
+          repository: bhashitva/js-chess-engine
+          ref: 25c8a1f077b81999faa78d504c74ec42639903b1
+          path: reference
       - name: Check out the compiler with portable text operations
         uses: actions/checkout@v5
         with:
@@ -50,7 +56,8 @@ jobs:
         run: mvn --batch-mode --no-transfer-progress -f ../compiler/pom.xml -DskipTests package
       - run: npm ci
       - name: Build the TypeScript reference for differential tests
-        run: npm run build:reference
+        working-directory: reference
+        run: npm ci && npm run build
       - name: Compile native Bhash applications
         shell: bash
         run: |
@@ -59,9 +66,11 @@ jobs:
           else
             npm run build
           fi
+      - name: Run specifications written in Bhash without the Node adapter
+        run: npm run test:native
       - name: Run chess correctness and differential tests
         run: npm test
-      - name: Run unchanged upstream API and FEN suites against Bhash
+      - name: Run upstream API and FEN assertions against Bhash
         run: npm run test:compat
       - name: Upload runnable native applications and Bhash source
         uses: actions/upload-artifact@v4

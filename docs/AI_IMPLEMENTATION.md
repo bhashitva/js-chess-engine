@@ -1,3 +1,6 @@
+> Historical upstream documentation: TypeScript paths and commands below
+> refer to the `master` branch. For this branch see [the Bhash source map](SOURCE_MAP.md).
+
 # AI Implementation Guide
 
 Complete technical documentation for the chess engine's AI system, including algorithms, optimizations, architecture, and implementation details.

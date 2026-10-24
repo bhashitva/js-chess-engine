@@ -1,4 +1,4 @@
-const { Game } = require('../dist/index.js');
+const { Game } = require('../bhash/index.cjs');
 
 // Diagnostic tool to understand why AI chooses specific moves
 function diagnoseMoveChoice(fen, expectedMoves, badMove, level = 6) {

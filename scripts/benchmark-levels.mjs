@@ -4,7 +4,7 @@
  * Tests all 6 AI levels with mid-game positions (~70% pieces remaining)
  */
 
-import { Game } from '../dist/index.js';
+import { Game } from '../bhash/index.cjs';
 
 // Mid-game test positions with ~70% pieces (22-24 pieces)
 const TEST_POSITIONS = [

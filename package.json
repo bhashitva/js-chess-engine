@@ -14,14 +14,11 @@
     "move-generation",
     "legal-moves",
     "transposition-table",
-    "zobrist",
     "fen",
-    "typescript",
     "node",
     "browser",
     "esm",
     "commonjs",
-    "react",
     "no-dependencies",
     "board-game",
     "bhash",
@@ -42,16 +39,13 @@
     "build:clr": "node bhash/build.mjs --clr",
     "test": "node --test test/bhash/*.test.cjs",
     "demo": "node example/bhash-demo.mjs",
-    "build:reference": "tsc",
-    "test:reference": "jest",
-    "typecheck:reference": "tsc --noEmit",
-    "lint:reference": "eslint .",
-    "test:compat": "jest --config jest.bhash.config.cjs --runInBand",
+    "test:compat": "node test/bhash/upstream-compat.cjs",
     "test:compat:harness": "node test/bhash/upstream-compat.cjs",
     "web:build": "node web/build.mjs",
     "web:serve": "node web/serve.mjs",
     "test:web": "node --test test/web/*.test.mjs",
-    "test:web:browser": "node test/web/browser.smoke.mjs"
+    "test:web:browser": "node test/web/browser.smoke.mjs",
+    "test:native": "node scripts/test-native.mjs"
   },
   "author": "bc.josefjadrny@gmail.com",
   "repository": {
@@ -64,19 +58,7 @@
     "node": ">=24"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "@types/jest": "^30.0.0",
-    "@types/node": "^25.0.9",
-    "conventional-changelog-cli": "^5.0.0",
-    "eslint": "^9.39.2",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-jest": "^29.12.1",
-    "jest": "^30.2.0",
-    "playwright": "^1.56.1",
-    "ts-jest": "^29.4.6",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.54.0"
+    "playwright": "^1.56.1"
   },
   "exports": {
     ".": {

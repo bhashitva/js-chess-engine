@@ -6,6 +6,7 @@ Validated locally on Windows using Java 24 (applications target Java 17),
 | Check | Result |
 | --- | --- |
 | Native Bhash chess build | JVM and .NET successful |
+| Specifications written in Bhash | 102 assertions passed on each of JVM and CLR, without the JavaScript adapter |
 | Native interactive demo | JVM and .NET successful; legal/illegal input and FEN export checked |
 | Windows launcher | Selects Java 17+ and runs the native demo |
 | Chess correctness/API suite | 12 cases on each backend |
@@ -13,18 +14,18 @@ Validated locally on Windows using Java 24 (applications target Java 17),
 | Unchanged upstream API/FEN cases | 45/45 passed via a synchronous assertion harness |
 | Original runtime exports | All retained, including exact numeric enum values and reverse mappings |
 | TypeScript declarations | Consumer example type-checked |
+| Bhash branch source separation | No executable `.ts` files; five API declaration files remain. Compatibility assertions run without TypeScript/Jest; the original engine is a separate comparison checkout |
 | Compiler regression suites | JVM 36, CLR 38, frontend 17, generics 3, WASM validation 3; zero failures |
 | Final text-operation checks | Both new shared regression cases rerun on JVM and CLR after final ASCII-case refinement |
 | Browser/WASM application | Compiled successfully; manual browser checks confirmed legal moves, AI reply, FEN loading, knight promotion, undo and deep-search cancellation |
 | Responsive browser layout | Checked at 390 px wide; no horizontal overflow |
 | Web transport/static server | Six tests cover request validation, worker reuse/recovery/cancellation, board presentation and WASM MIME handling |
 
-The 45-case compatibility run executed the unchanged `api.test.ts` and
-`fen.test.ts` bodies with a small local synchronous matcher harness. This was
-not a full Jest run. The harness is provided at `test/bhash/upstream-compat.cjs`
-and uses the TypeScript development dependency to load those original tests.
-`npm run test:compat:harness` reproduces it after `npm ci`.
-`jest.bhash.config.cjs` is also provided for running these suites with Jest.
+The original 45-case compatibility run executed upstream `api.test.ts` and
+`fen.test.ts` bodies with a small synchronous matcher harness. Those assertions
+are now retained as `test/compat/*.test.cjs`, with type annotations erased and
+imports redirected to the Bhash adapter. `npm run test:compat` reproduces the
+suite without installing TypeScript or Jest.
 
 The differential check uses the original TypeScript implementation only as an
 independent test oracle. It is not loaded by the port at runtime.
@@ -57,13 +58,28 @@ randomized AI, input validation, and FEN/JSON round trips.
 ## Reproduction
 
 ```sh
-node --test test/bhash/*.test.cjs
+npm run test:native
+npm test
+npm run test:compat
 ```
 
 Run again with `BHASH_TARGET=clr`. To enable the optional differential test,
 set `REFERENCE_ENGINE` to a separately built upstream `dist/index.js`.
-To build that reference from the preserved source, install development
-dependencies and run `npm run build:reference`.
+Build the reference in a separate checkout (as CI does), never as part of the
+native application:
+
+```sh
+git clone https://github.com/bhashitva/js-chess-engine.git ../reference
+git -C ../reference checkout 25c8a1f077b81999faa78d504c74ec42639903b1
+cd ../reference
+npm ci
+npm run build
+```
+
+Return to the Bhash checkout, set `REFERENCE_ENGINE` to that checkout's absolute
+`dist/index.js` path, then run `npm test`. Implementation-specific TypeScript
+unit/AI benchmark tests stay with their original implementation on `master`;
+removing them from this branch does not imply they pass against Bhash.
 
 In the companion compiler checkout, run `mvn verify` with JDK 17+, Maven 3.9+
 and .NET SDK 10 installed. No browser workload is required for the compiler's

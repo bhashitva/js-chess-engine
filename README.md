@@ -8,6 +8,9 @@ The application compiles to a standalone **JVM JAR**, **.NET 10 assembly**, or
 **browser WebAssembly application**.
 The JavaScript adapter delegates chess operations to that compiled application;
 it does not import or run the original TypeScript engine.
+The `bhash` branch contains no executable TypeScript engine or TypeScript tests.
+The original implementation remains on `master`. The five `.d.ts` files only
+describe the public API for TypeScript consumers; they contain no chess logic.
 
 ## Play in a browser
 
@@ -140,7 +143,9 @@ No TypeScript build is involved in producing the chess applications.
 | `bhash/play.bhash` | Native console game entry point |
 | `bhash/protocol.bhash` | Line protocol used by adapters and automated tests |
 | `bhash/index.cjs` / `index.mjs` | Node transport and external data conversion |
-| `src/`, `test/unit/`, `test/integration/` | Preserved upstream reference sources/tests |
+| `bhash/tests.bhash` | Engine specifications written in Devanagari Bhash |
+| `test/compat/` | Upstream API/FEN assertions adapted to run without TypeScript |
+| `master` branch | Original TypeScript source and implementation-specific tests |
 
 To use the library in another Bhash application, concatenate it with a source
 containing your `कार्य मुख्य() -> शून्य`. For example:
@@ -163,19 +168,24 @@ function interface, embedded JavaScript, or host-language chess implementation.
 ## Validation
 
 ```sh
-node --test test/bhash/*.test.cjs
+npm run test:native   # specifications compiled from bhash/tests.bhash
+npm test              # public API and differential tests
+npm run test:compat   # original API/FEN assertions, without TypeScript or Jest
 ```
 
 Repeat with `BHASH_TARGET=clr` to test the .NET build. Differential tests are
 enabled by setting `REFERENCE_ENGINE` to a separately built original
 `dist/index.js`. Without it, the differential test is explicitly skipped.
-Use `npm ci` and `npm run build:reference` if you want to build the preserved
-TypeScript reference. The unchanged upstream API/FEN suites can also be run with
-`npm run test:compat` after installing the development dependencies.
+CI checks out the pinned original revision into a separate `reference/` directory
+and builds it only for comparison. See [VALIDATION.md](VALIDATION.md) to reproduce
+that check without retaining a second chess implementation in this branch.
 
 See [VALIDATION.md](VALIDATION.md) for measured results and [PORTING.md](PORTING.md)
 for architecture and compatibility limits. The original project's documentation
-is preserved in [README.upstream.md](README.upstream.md).
+is preserved in [README.upstream.md](README.upstream.md); its TypeScript paths
+and commands refer to `master`, not the native port.
+See the [source correspondence](docs/SOURCE_MAP.md) for each original module
+and its native Bhash equivalent, including the remaining algorithm differences.
 
 ## Compatibility and scope
 
