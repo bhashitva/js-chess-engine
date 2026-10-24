@@ -5,7 +5,9 @@
 The starting point is `bhashitva/js-chess-engine` revision
 `25c8a1f077b81999faa78d504c74ec42639903b1` (2.4.6). The language baseline is
 `bhashitva/bhash` revision `2029642dae140e9fe488798f8f81962ef0019624`.
-The original source is retained for review and differential verification.
+The original source is retained on `master` for review. CI checks out the pinned
+revision separately for differential verification; it is absent from `bhash`.
+See [docs/SOURCE_MAP.md](docs/SOURCE_MAP.md) for module correspondence.
 
 The native implementation uses A1=0 through H8=63, with uppercase white and
 lowercase black pieces. `बिसात` holds a fixed-length text mailbox and explicit
@@ -46,8 +48,9 @@ Both the library and entry points remain actual type-checked Bhash source.
 
 - Public API names, configuration fields, FEN and move shapes remain available
   through the Node adapter. Bhash names are Devanagari and serialized JSON is text.
-- The original TypeScript implementation remains as reference code; the package
-  entry now selects the compiled Bhash backend.
+- The package entry selects the compiled Bhash backend. Original TypeScript
+  source and implementation-specific tests live on `master`. Only `.d.ts` API
+  declarations remain in `bhash`, for consumer compatibility.
 - Search strength, node totals, cache persistence and timing differ. Cache size
   is an approximate capacity setting, not an exact heap allocation contract.
 - FEN clocks reject malformed numeric text rather than accepting partial numbers

@@ -1,3 +1,6 @@
+> Historical upstream documentation: TypeScript paths and commands below
+> refer to the `master` branch. For this branch see [the Bhash source map](SOURCE_MAP.md).
+
 # Chess Engine Performance Optimization Plan
 
 ## Problem

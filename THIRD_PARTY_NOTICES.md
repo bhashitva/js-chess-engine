@@ -3,7 +3,10 @@
 This port is derived from Josef Jadrny's **js-chess-engine**, MIT licensed,
 as forked at https://github.com/bhashitva/js-chess-engine.
 The original copyright and permission notice are preserved in `LICENSE`.
-The original TypeScript sources and tests remain in `src/` and `test/` for reference.
+The original TypeScript sources and implementation-specific tests remain on
+the `master` branch. API/FEN assertions derived from the upstream tests are
+retained in `test/compat/` with type annotations erased and imports redirected.
+Native chess implementation and specifications are Bhash source in `bhash/`.
 Reference revision: `25c8a1f077b81999faa78d504c74ec42639903b1`.
 
 Bhash compiler source comes from https://github.com/bhashitva/bhash,

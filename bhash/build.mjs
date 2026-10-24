@@ -8,7 +8,7 @@ if (!compiler) throw new Error('Set BHASH_COMPILER to the extended bhash-compile
 const target = process.argv.includes('--clr') ? 'clr' : 'jvm';
 const build = path.join(here, '../.bhash-build');
 fs.mkdirSync(build, { recursive: true });
-for (const [entry, output] of [['protocol', 'chess'], ['play', 'play']]) {
+for (const [entry, output] of [['protocol', 'chess'], ['play', 'play'], ['tests', 'tests']]) {
   const source = path.join(build, `${entry}.bhash`);
   fs.writeFileSync(source, fs.readFileSync(path.join(here, 'shatranj.bhash'), 'utf8') + '\n' + fs.readFileSync(path.join(here, `${entry}.bhash`), 'utf8'));
   const destination = path.join(here, target === 'clr' ? `${output}-clr` : `${output}.jar`);
