@@ -20,7 +20,7 @@ if (path.dirname(dist) !== web || path.basename(dist) !== 'dist') throw new Erro
 await fs.rm(dist, { recursive: true, force: true });
 await fs.mkdir(path.join(dist, 'engine'), { recursive: true });
 await fs.cp(path.join(runtime, '_framework'), path.join(dist, 'engine/_framework'), { recursive: true });
-for (const file of ['index.html', 'styles.css', 'app.js', 'engine-client.js', 'engine-worker.js', 'pieces.js', 'presentation.js']) {
+for (const file of ['index.html', 'bhash-analytics.js', 'styles.css', 'app.js', 'engine-client.js', 'engine-worker.js', 'pieces.js', 'presentation.js']) {
   await fs.copyFile(path.join(web, file), path.join(dist, file));
 }
 for (const file of ['LICENSE', 'THIRD_PARTY_NOTICES.md']) await fs.copyFile(path.join(root, file), path.join(dist, file));
