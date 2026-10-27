@@ -99,15 +99,15 @@ Environment settings:
 
 ## Build from Bhash source
 
-The companion `../bhash-compiler` checkout extends Bhash with the text operations
-needed by this port. Its prebuilt compiler JAR is included. To rebuild it, install
+The engine uses the bundled मानक.पाठ्य, मानक.गणित and मानक.जेसन standard library.
+Use the pinned compiler revision below. To rebuild it, install
 JDK 17+ and Maven 3.9+, then run `mvn verify` in that checkout.
 
 For a fresh GitHub checkout, obtain the compiler dependency as follows:
 
 ```sh
 git clone https://github.com/bhashitva/bhash.git ../bhash-compiler
-git -C ../bhash-compiler checkout 0591eb7f34ab61e69dd8032c37c59fcfa641e770
+git -C ../bhash-compiler checkout cf46f367d67b0236e5a0aa7a434d98679d5b723b
 ```
 
 Run `mvn verify` in `../bhash-compiler` to produce its compiler JAR. CI uses this
@@ -125,7 +125,7 @@ node bhash/build.mjs --clr    # additionally requires .NET 10 SDK
 
 On macOS/Linux, set `BHASH_COMPILER` with `export` and run the same Node commands.
 The build script joins the reusable library with each entry point before calling
-the Bhash compiler, because Bhash does not yet have module/import syntax.
+the Bhash compiler, retaining the existing single-compilation-unit layout. Standard-library imports are resolved by the pinned compiler.
 It produces `chess.jar` (API protocol), `play.jar` (interactive showcase), and
 equivalent `chess-clr/` / `play-clr/` deployment directories.
 No TypeScript build is involved in producing the chess applications.
