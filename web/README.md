@@ -13,7 +13,7 @@ request/response entry point, not a replacement implementation of chess rules.
 
 ## Build
 
-Build prerequisites: JDK 17+, the Bhash compiler JAR with text operations, Node 24+,
+Build prerequisites: JDK 17+, the Bhash compiler JAR with the portable standard library, Node 24+,
 and .NET SDK 10 with its WebAssembly workload. Use the companion compiler checkout
 or the pinned revision in `.github/workflows/web.yml`.
 

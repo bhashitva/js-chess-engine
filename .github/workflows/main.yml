@@ -34,11 +34,11 @@ jobs:
           repository: bhashitva/js-chess-engine
           ref: 25c8a1f077b81999faa78d504c74ec42639903b1
           path: reference
-      - name: Check out the compiler with portable text operations
+      - name: Check out the compiler with the portable standard library
         uses: actions/checkout@v5
         with:
           repository: bhashitva/bhash
-          ref: 0591eb7f34ab61e69dd8032c37c59fcfa641e770
+          ref: cf46f367d67b0236e5a0aa7a434d98679d5b723b
           path: compiler
       - uses: actions/setup-java@v5
         with:

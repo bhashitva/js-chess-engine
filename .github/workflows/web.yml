@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           repository: bhashitva/bhash
-          ref: 365e2113462fc33807557aa4efd480893203622e
+          ref: cf46f367d67b0236e5a0aa7a434d98679d5b723b
           path: compiler
       - uses: actions/setup-java@v5
         with:
