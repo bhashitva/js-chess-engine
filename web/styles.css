@@ -886,3 +886,6 @@ dialog pre {
     transition:none!important
   }
 }
+
+/* Keep community/support reachable on phones as well as desktops. */
+.community-link{font-size:12px;text-decoration:none;text-underline-offset:4px;white-space:nowrap;color:inherit}.community-link:hover{text-decoration:underline}footer .community-link{font-size:inherit}@media(max-width:640px){.site-header{height:auto;min-height:83px;gap:12px;flex-wrap:wrap;padding:14px 0}.header-right{gap:12px;flex-wrap:wrap;justify-content:flex-end}}
