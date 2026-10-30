@@ -12,7 +12,7 @@
   <div class="page">
     <header class="site-header">
       <a class="brand" href="./" aria-label="Bhash Chess home"><span class="brand-mark" lang="hi">भा</span><span>BHASH<span class="brand-sub">THE LANGUAGE AT PLAY</span></span></a>
-      <div class="header-right"><span id="runtime-status" class="runtime-status" role="status">Loading Bhash…</span><a class="source-link" href="https://github.com/bhashitva/js-chess-engine/tree/bhash" target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a></div>
+      <div class="header-right"><a class="community-link" href="https://discord.gg/qC5zdJy6Qw" target="_blank" rel="noopener noreferrer" aria-label="Bhash community and support on Discord (opens in a new tab)">Discord ↗</a><span id="runtime-status" class="runtime-status" role="status">Loading Bhash…</span><a class="source-link" href="https://github.com/bhashitva/js-chess-engine/tree/bhash" target="_blank" rel="noreferrer">View source <span aria-hidden="true">↗</span></a></div>
     </header>
     <main>
       <section class="intro" aria-labelledby="title"><div><p class="eyebrow">AN OLD GAME. A NEW LANGUAGE.</p><h1 id="title"><span lang="hi">शतरंज</span><span class="title-dot">.</span><span class="title-english">Chess, in Bhash.</span></h1></div><p class="intro-note">A little strategy.<br>A whole new way to express it.<span>Written in Devanagari. Played anywhere.</span></p></section>
@@ -38,7 +38,7 @@
       </div>
       <div id="error" class="error-banner" role="alert" hidden><span id="error-text"></span><button id="dismiss-error" aria-label="Dismiss error">×</button></div>
     </main>
-    <footer><span>Made with <strong lang="hi">भाष</strong> and a love of possibilities.</span><span>NO SERVER. JUST YOUR NEXT MOVE.</span></footer>
+    <footer><span>Made with <strong lang="hi">भाष</strong> and a love of possibilities. · Community &amp; support: <a class="community-link" href="https://discord.gg/qC5zdJy6Qw" target="_blank" rel="noopener noreferrer" aria-label="Bhash community and support on Discord (opens in a new tab)">Discord ↗</a></span><span>NO SERVER. JUST YOUR NEXT MOVE.</span></footer>
   </div>
   <dialog id="promotion-dialog" aria-labelledby="promotion-title"><h2 id="promotion-title">A pawn with possibilities.</h2><p>Choose your promotion.</p><div id="promotion-options" class="promotion-options"></div><button id="cancel-promotion" class="secondary-button">Cancel</button></dialog>
   <dialog id="position-dialog" aria-labelledby="position-title"><h2 id="position-title">A position, ready to travel.</h2><p>Copy the current FEN, or paste a position to explore.</p><label for="fen-input" class="visually-hidden">FEN position</label><textarea id="fen-input" rows="4" spellcheck="false"></textarea><p id="fen-feedback" class="dialog-feedback" role="status"></p><div class="dialog-actions"><button id="copy-fen" class="secondary-button">Copy FEN</button><button id="load-fen" class="primary-button">Load position</button></div><button id="close-position" class="text-button">Back to the game</button></dialog>
